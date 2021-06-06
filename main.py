@@ -138,9 +138,9 @@ def consultTable(mydb):
     try:
         query = f"SELECT * FROM {table}"
         mycursor.execute(query)
-        for table in mycursor.fetchall():
-            print(table)
-        print("------Tabela Turma consultada com sucesso------")
+        for tuple in mycursor.fetchall():
+            print(tuple)
+        print(f"------Tabela {table} consultada com sucesso------")
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
 
