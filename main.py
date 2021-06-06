@@ -209,7 +209,7 @@ def main():
   while(opcao!=0):
 
       if(opcao ==1):
-          insertOption()         
+          insertOption(mydb)         
       if(opcao ==2):
           deleteOption(mydb)
       if(opcao ==3):
