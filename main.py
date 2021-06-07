@@ -56,7 +56,7 @@ def deleteOption(mydb):
     elif insertOption == 2:
         deleteProfessor(mydb)
     else:
-        print("Invalid option...")
+        print("Invalid option..")
         time.sleep(1)
         print("Exiting")
         time.sleep(1)
@@ -65,7 +65,7 @@ def deleteOption(mydb):
 def updateOption(mydb):
     print("Escolha a opcao que deseja: ")
     print("1 - Alterar uma disciplina")
-    print("2 - Alterar uma faculdade")
+    print("2 - Alterar uma turma")
     insertOption = int(input())
     if insertOption == 1:
         updateDisciplina(mydb)
@@ -83,16 +83,13 @@ def insertStudent(mydb):
     id_aluno = int(input("ID Aluno: "))
     id_faculdade = int(input("ID Faculdade: "))
     nome_aluno = input("Nome Aluno: ")
-    cra_aluno = int(input("CRA Aluno: "))
+    cra_aluno = int(input("CRA Aluno: "))  
     datanasc_aluno = input("Data Nascimento Aluno: ")
     telefone_aluno = input("Telefone Aluno: ")
-
+    
     mycursor = mydb.cursor()
     try:
-        query = f"insert into Aluno values({id_aluno}, {id_faculdade}, {nome_aluno}, {cra_aluno},{datanasc_aluno}, {telefone_aluno}"
-
-        #res_insert_query ="""insert into Aluno values(%s, %s, %s, %s, %s, %s)"""
-        #d_to_insert=(id_aluno, id_faculdade, nome_aluno, cra_aluno, datanasc_aluno, telefone_aluno)
+        query = f"insert into aluno values({id_aluno}, {id_faculdade}, {nome_aluno}, {cra_aluno},{datanasc_aluno}, {telefone_aluno})"
         mycursor.execute(query)
         mydb.commit()
         print("------Aluno inserido com sucesso------")
@@ -110,11 +107,7 @@ def insertProfessor(mydb):
     mycursor = mydb.cursor()
     try:
 
-        query = f"insert into Professor values ({id_professor}, {id_faculdade}, {nome_prof}, {datanasc_prof}, {salario_prof})"
-
-        #res_insert_query ="""insert into Professor values(%s, %s, %s, %s, %s)"""
-        #d_to_insert=(id_professor, id_faculdade, nome_prof, datanasc_prof, salario_prof)
-        
+        query = f"insert into Professor values ({id_professor}, {id_faculdade}, {nome_prof}, {datanasc_prof}, {salario_prof})"      
         mycursor.execute(query)
         mydb.commit()
         print("------Professor inserido com sucesso------")
@@ -144,12 +137,14 @@ def deleteProfessor(mydb):
         print(error)
 
 def consultTable(mydb):
-    options = ["Aluno", "Professor", "Disciplinas", "Faculdade"]
+    options = ["Aluno", "Professor", "Disciplinas", "Faculdade", "Turma", "Salaaula"]
     print("Selecione qual tabela deseja consultar:")
     print( "1 - Aluno")
     print( "2 - Professor")
     print( "3 - Disciplinas")
     print( "4 - Faculdade")
+    print( "5 - Turma")
+    print( "6 - Salaaula")
 
     option = int(input())
     table = options[option-1]
@@ -159,8 +154,10 @@ def consultTable(mydb):
     try:
         query = f"SELECT * FROM {table}"
         mycursor.execute(query)
+        print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-")
         for tuple in mycursor.fetchall():
             print(tuple)
+        print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-")
         print(f"------Tabela {table} consultada com sucesso------")
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -190,6 +187,7 @@ def updateDisciplina(mydb):
 
         mycursor.execute(query)
         mydb.commit()
+        print("Tabela Disciplinas alterada com sucesso!")
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
 
@@ -219,6 +217,7 @@ def updateTurma(mydb):
 
         mycursor.execute(query)
         mydb.commit()
+        print("Tabela Turma alterada com sucesso!")
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
     
