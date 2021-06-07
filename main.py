@@ -1,5 +1,6 @@
 import psycopg2
 import json
+import time
 
 DBHOST = "200.131.206.13"
 DATABASE = "lucasnm"
@@ -21,11 +22,13 @@ def createConnection():
   return mydb
 
 def menu():
-  print("1 - Inclusão")
-  print("2 - Deleção")
-  print("3 - Consultar")
-  print("4 - Alteração")
-  print("0 - Sair")
+    print("----------------")
+    print("1 - Inserir")
+    print("2 - Deletar")
+    print("3 - Consultar")
+    print("4 - Alterar")
+    print("0 - Sair")
+    print("----------------")
 
 def insertOption(mydb):
     print("Escolha a opcao que deseja: ")
@@ -34,8 +37,14 @@ def insertOption(mydb):
     insertOption = int(input())
     if insertOption == 1:
         insertStudent(mydb)
-    else:
+    elif insertOption == 2:
         insertProfessor(mydb)
+    else:
+        print("Invalid option...")
+        time.sleep(1)
+        print("Exiting")
+        time.sleep(1)
+        exit
 
 def deleteOption(mydb):
     print("Escolha a opcao que deseja: ")
@@ -44,8 +53,14 @@ def deleteOption(mydb):
     insertOption = int(input())
     if insertOption == 1:
         deleteStudent(mydb)
-    else:
+    elif insertOption == 2:
         deleteProfessor(mydb)
+    else:
+        print("Invalid option...")
+        time.sleep(1)
+        print("Exiting")
+        time.sleep(1)
+        exit
 
 def updateOption(mydb):
     print("Escolha a opcao que deseja: ")
@@ -54,8 +69,14 @@ def updateOption(mydb):
     insertOption = int(input())
     if insertOption == 1:
         updateDisciplina(mydb)
+    elif insertOption == 2:
+        updateTurma(mydb)
     else:
-        updateFaculdade(mydb)
+        print("Invalid option...")
+        time.sleep(1)
+        print("Exiting")
+        time.sleep(1)
+        exit
 
 def insertStudent(mydb):
     print("Digite os dados do aluno")
@@ -172,17 +193,17 @@ def updateDisciplina(mydb):
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
 
-def updateFaculdade(mydb):
-    options = ["idfaculdade", "bloco", "nprofessores", "nalunos", "orcamento"]
+def updateTurma(mydb):
+    options = ["idturma", "ano", "semestre", "local ministrada", "nsala"]
     
-    id_update = int(input("Informe o ID da faculdade que deseja alterar:"))
+    id_update = int(input("Informe o ID da turma que deseja alterar:"))
 
     print("Informe os dados que deseja alterar")
-    print("1 - idfaculdade")
-    print("2 - bloco")
-    print("3 - nprofessores")
-    print("4 - nalunos")
-    print("5 - orcamento") 
+    print("1 - idturma")
+    print("2 - ano")
+    print("3 - semestre")
+    print("4 - local")
+    print("5 - nsala") 
     
     option_update = int(input())
 
@@ -194,7 +215,7 @@ def updateFaculdade(mydb):
 
     mycursor = mydb.cursor()
     try:
-        query = f"UPDATE faculdade SET {field_update} = {new_value} where idfaculdade ={id_update}"
+        query = f"UPDATE turma SET {field_update} = {new_value} where idturma ={id_update}"
 
         mycursor.execute(query)
         mydb.commit()
@@ -210,12 +231,18 @@ def main():
 
       if(opcao ==1):
           insertOption(mydb)         
-      if(opcao ==2):
+      elif(opcao ==2):
           deleteOption(mydb)
-      if(opcao ==3):
+      elif(opcao ==3):
           consultTable(mydb)
-      if(opcao ==4):
+      elif(opcao ==4):
           updateOption(mydb)
+      else:
+          print("Invalid option...")
+          time.sleep(1)
+          print("Try again")
+          time.sleep(1)
+          
       menu()
       opcao = int(input("Digite uma nova opção: "))
 
