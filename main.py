@@ -28,7 +28,7 @@ def menu():
     print("3 - Consultar")
     print("4 - Alterar")
     print("5 - Transação na tabela faculdade e turma")
-    print("6 - Cadastra um aluno e matricula")
+    print("6 - Inserir Trigger")
     print("0 - Sair")
     print("----------------")
 
@@ -243,27 +243,29 @@ def createTransaction(mydb):
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
 
-## Função exclusiva para testar a trigger
-def cadastraAluno(mydb):
-    print("Digite os dados do aluno")
-    id_aluno = int(input("Informe o ID Aluno: "))
-    id_faculdade = int(input("Informe o ID faculdade: "))
-    nome_aluno = int(input("Informe o nome do aluno: "))
-    cra = int(input("Informe o CRA: "))
-    datanascimentoaluno = input("Informe a data nascimento: ")
-    telefone = input("Informe o telefone: ")
 
+def insertTrigger(mydb):
+    
 
     mycursor=mydb.cursor()
 
     try:
-        query = f'insert into aluno values({id_aluno}, {id_faculdade}, {nome_aluno}, {cra}, {datanascimentoaluno}, {telefone})'
+        query = "SET SEARCH_PATH TO universidade; CREATE OR REPLACE FUNCTION cadastraDisciplina() RETURNS TRIGGER as $$ DECLARE command TEXT;BEGIN command = 'INSERT INTO matricula values' ||'(' || quote_literal(NEW.idaluno) || ',' || quote_literal (NEW.idaluno)||','|| 'SELECT floor(random() * ((0)- (select count(*) from universidade.turma)+1) + (select count(*) from universidade.turma))::int,0, 0' ||')'; EXECUTE command; RETURN NEW; END; $$ LANGUAGE plpgsql;"
 
         mycursor.execute(query)
+
         
-        print("Aluno inserido e matriculado")
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
+
+    try:
+        query = "CREATE TRIGGER cadastra AFTER INSERT ON universidade.aluno FOR EACH ROW EXECUTE PROCEDURE cadastraDisciplina();"
+
+        mycursor(query)
+        print("Trigger Inserida")    
+    except(Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        
     
 
 
@@ -285,7 +287,7 @@ def main():
     elif(opcao == 5):
         createTransaction(mydb)
     elif(opcao == 6):
-        cadastraAluno(mydb)
+        insertTrigger(mydb)
     else:
         print("Invalid option...")
         time.sleep(1)
