@@ -12,12 +12,12 @@ SCHEMA = "universidade"
 
 def createConnection():
   mydb = psycopg2.connect(
-  host= DBHOST,
-  database=DATABASE,
-  user=USER,
-  password=PASSWORD,
-  port = PORT,
-  options = f'-c search_path={SCHEMA}'
+    host= DBHOST,
+    database=DATABASE,
+    user=USER,
+    password=PASSWORD,
+    port = PORT,
+    options = f'-c search_path={SCHEMA}'
   )
   return mydb
 
@@ -27,6 +27,8 @@ def menu():
     print("2 - Deletar")
     print("3 - Consultar")
     print("4 - Alterar")
+    print("5 - Transação na tabela faculdade e turma")
+    print("6 - ")
     print("0 - Sair")
     print("----------------")
 
@@ -220,7 +222,31 @@ def updateTurma(mydb):
         print("Tabela Turma alterada com sucesso!")
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
+
+def createTransaction(mydb):
+    print("Digite os valores para Faculdade!")
+    id_faculdade = int(input("Informe o ID faculdade: "))
+    orcamento_faculdade = int(input("Informe o orcamento da faculdade: "))
+
+    print("Digite os valores para Turma")
+    id_turma = int(input("Informe o ID Turma: "))
+    localministrado_turma = input("Informe o local ministrado: ")
     
+    
+    mycursor = mydb.cursor()
+
+    try:
+        query = f" BEGIN; UPDATE faculdade SET orcamento = {orcamento_faculdade} WHERE idfaculdade = {id_faculdade};UPDATE turma SET localministrado = {localministrado_turma}WHERE idturma = {id_turma}; COMMIT;"
+
+        mycursor.execute(query)
+        print("Transação Efetuada")
+    except(Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+def cadastraAluno(mydb):
+
+
+
 def main():
   mydb = createConnection()
   menu()
@@ -228,22 +254,26 @@ def main():
 
   while(opcao!=0):
 
-      if(opcao ==1):
-          insertOption(mydb)         
-      elif(opcao ==2):
-          deleteOption(mydb)
-      elif(opcao ==3):
-          consultTable(mydb)
-      elif(opcao ==4):
-          updateOption(mydb)
-      else:
-          print("Invalid option...")
-          time.sleep(1)
-          print("Try again")
-          time.sleep(1)
+    if(opcao ==1):
+        insertOption(mydb)         
+    elif(opcao ==2):
+        deleteOption(mydb)
+    elif(opcao ==3):
+        consultTable(mydb)
+    elif(opcao ==4):
+        updateOption(mydb)
+    elif(opcao == 5):
+        createTransaction(mydb)
+    elif(opcao == 6):
+        cadastraAluno(mydb)
+    else:
+        print("Invalid option...")
+        time.sleep(1)
+        print("Try again")
+        time.sleep(1)
           
-      menu()
-      opcao = int(input("Digite uma nova opção: "))
+    menu()
+    opcao = int(input("Digite uma nova opção: "))
 
 
   mydb.close()
