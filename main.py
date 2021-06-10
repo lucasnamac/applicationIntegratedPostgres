@@ -28,7 +28,7 @@ def menu():
     print("3 - Consultar")
     print("4 - Alterar")
     print("5 - Transação na tabela faculdade e turma")
-    print("6 - ")
+    print("6 - Cadastra um aluno e matricula")
     print("0 - Sair")
     print("----------------")
 
@@ -243,8 +243,28 @@ def createTransaction(mydb):
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
 
+## Função exclusiva para testar a trigger
 def cadastraAluno(mydb):
+    print("Digite os dados do aluno")
+    id_aluno = int(input("Informe o ID Aluno: "))
+    id_faculdade = int(input("Informe o ID faculdade: "))
+    nome_aluno = int(input("Informe o nome do aluno: "))
+    cra = int(input("Informe o CRA: "))
+    datanascimentoaluno = input("Informe a data nascimento: ")
+    telefone = input("Informe o telefone: ")
 
+
+    mycursor=mydb.cursor()
+
+    try:
+        query = f'insert into aluno values({id_aluno}, {id_faculdade}, {nome_aluno}, {cra}, {datanascimentoaluno}, {telefone})'
+
+        mycursor.execute(query)
+        
+        print("Aluno inserido e matriculado")
+    except(Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    
 
 
 def main():
