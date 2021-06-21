@@ -10,6 +10,7 @@ PORT = "5432"
 SCHEMA = "universidade"
 
 
+
 def createConnection():
   mydb = psycopg2.connect(
     host= DBHOST,
@@ -68,11 +69,14 @@ def updateOption(mydb):
     print("Escolha a opcao que deseja: ")
     print("1 - Alterar uma disciplina")
     print("2 - Alterar uma turma")
+    print("3 - Alterar matricula")
     insertOption = int(input())
     if insertOption == 1:
         updateDisciplina(mydb)
     elif insertOption == 2:
         updateTurma(mydb)
+    elif insertOption == 3:
+        updateMatricula(mydb)
     else:
         print("Invalid option...")
         time.sleep(1)
@@ -91,7 +95,7 @@ def insertStudent(mydb):
     
     mycursor = mydb.cursor()
     try:
-        query = f"insert into aluno values({id_aluno}, {id_faculdade}, {nome_aluno}, {cra_aluno},{datanasc_aluno}, {telefone_aluno})"
+        query = f"insert into aluno values({id_aluno}, {id_faculdade}, '{nome_aluno}', {cra_aluno},'{datanasc_aluno}', {telefone_aluno})"
         mycursor.execute(query)
         mydb.commit()
         print("------Aluno inserido com sucesso------")
@@ -109,7 +113,7 @@ def insertProfessor(mydb):
     mycursor = mydb.cursor()
     try:
 
-        query = f"insert into Professor values ({id_professor}, {id_faculdade}, {nome_prof}, {datanasc_prof}, {salario_prof})"      
+        query = f"insert into Professor values ({id_professor}, {id_faculdade}, '{nome_prof}', '{datanasc_prof}', {salario_prof})"      
         mycursor.execute(query)
         mydb.commit()
         print("------Professor inserido com sucesso------")
@@ -166,7 +170,6 @@ def consultTable(mydb):
 
 def updateDisciplina(mydb):
     options = ["sigladisciplina", "nome", "creditos", "prerequisito"]
-    
     id_update = int(input("Informe o ID da disciplina que deseja alterar:"))
 
     print("Informe os dados que deseja alterar")
@@ -179,13 +182,18 @@ def updateDisciplina(mydb):
 
     field_update = options[option_update-1]
     field_update.format()
+    
+    if(option_update ==2 or option_update==1):
+        new_value = input("Informe o valor a ser alterado: ")
+        query = f"UPDATE disciplinas SET {field_update} = '{new_value}' where iddisciplina ={id_update}"
+    else:
+        new_value = int(input("Informe o novo valor do campo a ser alterado: "))
+        query = f"UPDATE disciplinas SET {field_update} = {new_value} where iddisciplina ={id_update}"
 
-
-    new_value = int(input("Informe o novo valor do campo a ser alterado: "))
 
     mycursor = mydb.cursor()
     try:
-        query = f"UPDATE disciplinas SET {field_update} = {new_value} where iddisciplina ={id_update}"
+        
 
         mycursor.execute(query)
         mydb.commit()
@@ -194,34 +202,68 @@ def updateDisciplina(mydb):
         print(error)
 
 def updateTurma(mydb):
-    options = ["idturma", "ano", "semestre", "local ministrada", "nsala"]
+    options = ["ano", "semestre", "localministrado", "nsala"]
     
     id_update = int(input("Informe o ID da turma que deseja alterar:"))
 
     print("Informe os dados que deseja alterar")
-    print("1 - idturma")
-    print("2 - ano")
-    print("3 - semestre")
-    print("4 - local")
-    print("5 - nsala") 
+    print("1 - Ano")
+    print("2 - Semestre")
+    print("3 - Local ministrado")
+    print("4 - Numero de sala") 
     
     option_update = int(input())
 
     field_update = options[option_update-1]
     field_update.format()
 
+    if(option_update == 3):
+        new_value = input("Informe o valor a ser alterado: ")
+        query = f"UPDATE turma SET {field_update} = '{new_value}' where idturma ={id_update}"
+        
+    else:
+        new_value = int(input("Informe o novo valor do campo a ser alterado: "))
+        query = f"UPDATE turma SET {field_update} = {new_value} where idturma ={id_update}"
 
-    new_value = int(input("Informe o novo valor do campo a ser alterado: "))
 
     mycursor = mydb.cursor()
     try:
-        query = f"UPDATE turma SET {field_update} = {new_value} where idturma ={id_update}"
-
         mycursor.execute(query)
         mydb.commit()
         print("Tabela Turma alterada com sucesso!")
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
+
+
+def updateMatricula(mydb):
+    options = ["notas", "faltas"]
+
+    id_matricula = int(input("Digite o ID que deseja alterar: "))
+
+    print("Digite a opção correspondente a que quer alterar")
+    print("1 - Notas")
+    print("2 - Faltas")
+    option_update = int(input())
+
+    field_update = options[option_update-1]
+    field_update.format()
+
+    new_value = int(input("Digite o novo valor do campo: "))
+
+    mycursor = mydb.cursor()
+
+    try:
+        query = f"UPDATE matricula SET {field_update} = {new_value} WHERE idmatricula = {id_matricula}"
+
+        mycursor.execute(query)
+        mycursor.commit()
+
+        print("------Dados alterados com sucesso-------")
+    except(Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+
+
 
 def createTransaction(mydb):
     print("Digite os valores para Faculdade!")
@@ -236,9 +278,10 @@ def createTransaction(mydb):
     mycursor = mydb.cursor()
 
     try:
-        query = f" BEGIN; UPDATE faculdade SET orcamento = {orcamento_faculdade} WHERE idfaculdade = {id_faculdade};UPDATE turma SET localministrado = {localministrado_turma}WHERE idturma = {id_turma}; COMMIT;"
+        query = f" BEGIN; UPDATE faculdade SET orcamento = {orcamento_faculdade} WHERE idfaculdade = {id_faculdade}; UPDATE turma SET localministrado = '{localministrado_turma}' WHERE idturma = {id_turma}; COMMIT;"
 
         mycursor.execute(query)
+        mydb.commit()
         print("Transação Efetuada")
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -246,28 +289,25 @@ def createTransaction(mydb):
 
 def insertTrigger(mydb):
     
-
     mycursor=mydb.cursor()
 
     try:
-        query = "SET SEARCH_PATH TO universidade; CREATE OR REPLACE FUNCTION cadastraDisciplina() RETURNS TRIGGER as $$ DECLARE command TEXT;BEGIN command = 'INSERT INTO matricula values' ||'(' || quote_literal(NEW.idaluno) || ',' || quote_literal (NEW.idaluno)||','|| 'SELECT floor(random() * ((0)- (select count(*) from universidade.turma)+1) + (select count(*) from universidade.turma))::int,0, 0' ||')'; EXECUTE command; RETURN NEW; END; $$ LANGUAGE plpgsql;"
+        query_procedure = "SET SEARCH_PATH TO universidade; CREATE OR REPLACE FUNCTION cadastramatricula() RETURNS TRIGGER as $$ DECLARE command TEXT;BEGIN command = 'INSERT INTO matricula values' ||'(' || quote_literal(NEW.idaluno) || ',' || quote_literal (NEW.idaluno)||','|| '(SELECT floor(random() * ((0)- (select count(*) from universidade.turma)+1) + (select count(*) from universidade.turma)))' ||')'; EXECUTE command; RETURN NEW; END; $$ LANGUAGE plpgsql;"
 
-        mycursor.execute(query)
-
+        
+        mycursor.execute(query_procedure)
         
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
 
     try:
-        query = "CREATE TRIGGER cadastra AFTER INSERT ON universidade.aluno FOR EACH ROW EXECUTE PROCEDURE cadastraDisciplina();"
+        query_trigger = "CREATE TRIGGER cadastra AFTER INSERT ON aluno FOR EACH ROW EXECUTE PROCEDURE cadastramatricula();"
 
-        mycursor(query)
+        mycursor.execute(query_trigger)
         print("Trigger Inserida")    
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
         
-    
-
 
 def main():
   mydb = createConnection()
