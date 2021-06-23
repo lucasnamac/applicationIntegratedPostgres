@@ -256,7 +256,7 @@ def updateMatricula(mydb):
         query = f"UPDATE matricula SET {field_update} = {new_value} WHERE idmatricula = {id_matricula}"
 
         mycursor.execute(query)
-        mycursor.commit()
+        mydb.commit()
 
         print("------Dados alterados com sucesso-------")
     except(Exception, psycopg2.DatabaseError) as error:
@@ -278,9 +278,12 @@ def createTransaction(mydb):
     mycursor = mydb.cursor()
 
     try:
-        query = f" BEGIN; UPDATE faculdade SET orcamento = {orcamento_faculdade} WHERE idfaculdade = {id_faculdade}; UPDATE turma SET localministrado = '{localministrado_turma}' WHERE idturma = {id_turma}; COMMIT;"
+        query1 = f" BEGIN; UPDATE faculdade SET orcamento = {orcamento_faculdade} WHERE idfaculdade = {id_faculdade};"
+        
+        query2 = f"UPDATE turma SET localministrado = '{localministrado_turma}' WHERE idturma = {id_turma}; COMMIT;"
 
-        mycursor.execute(query)
+        mycursor.execute(query1)
+        mycursor.execute(query2)
         mydb.commit()
         print("Transação Efetuada")
     except(Exception, psycopg2.DatabaseError) as error:
