@@ -2,12 +2,12 @@ import psycopg2
 import json
 import time
 
-DBHOST = "200.131.206.13"
-DATABASE = "lucasnm"
-USER = "lucasnm"
-PASSWORD = "f1g1a5b4c3d2e1"
-PORT = "5432"
-SCHEMA = "universidade"
+DBHOST = ""  #Put the database address
+DATABASE = "" #Put the database name
+USER = "" #Set user name
+PASSWORD = "" #Put the password
+PORT = "" #Set port
+SCHEMA = "" #Set shema
 
 
 
